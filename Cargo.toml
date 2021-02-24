@@ -13,3 +13,4 @@ tokio = { version = "*", features = ["full"] }
 futures = "*"
 regex = "*"
 itertools = "*"
+rspotify = "*"
