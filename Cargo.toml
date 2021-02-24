@@ -11,5 +11,5 @@ json = "*"
 reqwest = { version = "*", features = ["json"] }
 tokio = { version = "*", features = ["full"] }
 futures = "*"
-scraper = "*"
 regex = "*"
+itertools = "*"
