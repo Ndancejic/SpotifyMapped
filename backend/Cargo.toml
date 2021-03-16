@@ -1,16 +1,16 @@
 [package]
 name = "spotify_mapped"
 version = "0.1.0"
-authors = ["gvelchuru <gvelchuru@gmail.com>"]
+authors = ["Nikola Dancejic <nikola.dancejic@live.com>", "gvelchuru <gvelchuru@gmail.com>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+rspotify = { version = "0.9"}
+tokio = { version = "0.2", features = ["full"] }
 json = "*"
 reqwest = { version = "*", features = ["json"] }
-tokio = { version = "*", features = ["full"] }
 futures = "*"
 regex = "*"
 itertools = "*"
-rspotify = "*"
