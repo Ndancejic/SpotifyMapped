@@ -12,5 +12,6 @@ Cargo.lock
 # Added by cargo
 
 # Spotify tokens
+.env
 .spotify_token_cache.json
 

@@ -1,34 +1,38 @@
-extern crate rspotify;
+mod wiki;
+mod spotify;
 
-use rspotify::client::Spotify;
-use rspotify::oauth2::{SpotifyClientCredentials, SpotifyOAuth};
-use rspotify::util::get_token;
+use wiki::get_birthplace;
+use spotify::spotify_ref;
+
+// export CLIENT_ID="your client_id"
+// export CLIENT_SECRET="secret"
 
 #[tokio::main]
 async fn main() {
-    // export CLIENT_ID="your client_id"
-    // export CLIENT_SECRET="secret"
-    let mut oauth = SpotifyOAuth::default()
-        .scope("user-read-currently-playing")
-        .redirect_uri("http://localhost:8888/callback")
-        .build();
+    let mut current_song = String::new();
+    let mut current_artists = Vec::new();
 
-    match get_token(&mut oauth).await {
-        Some(token_info) => {
-            let client_credential = SpotifyClientCredentials::default()
-                .token_info(token_info)
-                .build();
+    let scope = "user-read-currently-playing";
+    let redirect_uri = "http://localhost:8888/callback";
 
-            let spotify = Spotify::default()
-                .client_credentials_manager(client_credential)
-                .build();
+    let spotify = spotify_ref::new(scope, redirect_uri).await;
 
-            let current_song = spotify
-                .current_playing(None)
-                .await;
+    spotify.get_current_song(&mut current_song)
+        .await;
+    match current_song.as_str()
+    {
+        "" => println!("Not currently playing"),
+        _ => println!("Currently playing: {}", current_song.to_string())
+    }
 
-            println!("{:?}", current_song);
+    spotify.get_current_artists(&mut current_artists)
+        .await;
+    if !current_artists.is_empty()
+    {
+        println!("Artists: ");
+        for artist in current_artists
+        {
+            println!("{}", artist.to_string())
         }
-        None => println!("auth failed"),
-    };
+    }
 }
