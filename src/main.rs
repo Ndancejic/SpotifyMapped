@@ -11,6 +11,8 @@ use spotify::SpotifyRef;
 async fn main() {
     let mut current_song = String::new();
     let mut current_artists = Vec::new();
+    let mut lat: i64;
+    let mut lng: i64;
 
     let scope = "user-read-currently-playing";
     let redirect_uri = "http://localhost:8888/callback";
@@ -33,7 +35,10 @@ async fn main() {
         for artist in current_artists
         {
             println!("{}", artist.to_string());
-            get_location(&artist.to_string()).await;
+            let tmp = get_location(&artist.to_string()).await;
+            lat = tmp.0;
+            lng = tmp.1;
+            println!("{:?}, {:?}", lat, lng);
         }
     }
 }
