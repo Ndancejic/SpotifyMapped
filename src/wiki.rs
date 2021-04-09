@@ -1,68 +1,63 @@
 extern crate reqwest;
-extern crate json;
-extern crate regex;
-extern crate itertools;
-use reqwest::Client;
-use regex::Regex;
-use itertools::join;
+extern crate scraper;
+extern crate select;
 
-pub async fn get_birthplace(artist: &str)
+use select::document::Document;
+use select::predicate::{Class};
+use tokio1::runtime::Runtime;
+
+pub async fn get_location(artist: &str)
 {
-    let birth_place_regex = match Regex::new(r"birth_place\s*=\s*([^\\n]*)\\n")
+    let mut url = String::from("https://en.wikipedia.org/wiki/");
+
+    url.push_str(&artist.replace(" ","_"));
+
+    // reqwest depends on tokio 1.x so create a new runtime
+    let rt = match Runtime::new()
     {
-        Ok(re) => re,
-        Err(err) => {
-            println!("{}", err);
-            panic!(err)
-        }
+        Ok(res) => res,
+        Err(_err) => panic!()
     };
 
-    let script_regex = match Regex::new(r"<[^>]*>")
-    {
-        Ok(re) => re,
-        Err(err) => {
-            println!("{}", err);
-            panic!(err)
+    rt.block_on
+    (
+        async {
+            let resp = match reqwest::get(url)
+                .await
+            {
+                Ok(res) => res,
+                Err(_err) => panic!()
+            };
+            let body = match resp.text()
+                .await
+            {
+                Ok(res) => res,
+                Err(_err) => panic!()
+            };
+            let document = Document::from(&*body);
+            let mut origin = String::new();
+
+            for node in document.find(Class("infobox-label")) {
+                if node.text() == "Origin"
+                {
+                    origin = match node.next()
+                    {
+                        Some(res) => res.text().clone(),
+                        None => origin
+                    };
+                    break;
+                }
+                else if node.text() == "Born"
+                {
+                    origin = match node.next()
+                    {
+                        Some(res) => res.text().clone(),
+                        None => origin
+                    };
+                }
+            }
+
+            println!("{:?}", origin);
         }
-    };
-
-    let location = get_wiki_regex(&artist, &birth_place_regex, &script_regex);
-    println!("{:?}", location.await);
-}
-
-async fn get_wiki_regex(name: &str, re: &Regex, script_regex: &Regex) -> Result<String, reqwest::Error>
-{
-    let client = Client::new();
-
-    let wiki_name = join(name.split(" "), "_");
-    let wiki_url = (format!("https://en.wikipedia.org/w/api.php?action=parse&page={}&format=json", wiki_name)).to_string();
-    let res = match client
-        .get(&wiki_url)
-        .send()
-        .await
-        {
-            Ok(re) => re,
-            Err(err) => {
-                println!("{}", err);
-                panic!(err)
-            }
-        };
-
-    let resp = match res
-        .text()
-        .await
-        {
-            Ok(re) => re,
-            Err(err) => {
-                println!("{}", err);
-                panic!(err)
-            }
-        };
-
-    let entry = &json::parse(&resp).unwrap()["parse"]["text"]["*"].dump();
-    let replaced = script_regex.replace_all(entry, "");
-    println!("{:?}", replaced);
-
-    return
-    Ok("".to_string())
+    );
 }

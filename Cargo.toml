@@ -7,10 +7,9 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rspotify = { version = "0.9"}
+rspotify = { version = "0.9" }
 tokio = { version = "0.2", features = ["full"] }
-json = "*"
-reqwest = { version = "*", features = ["json"] }
-futures = "*"
-regex = "*"
-itertools = "*"
+tokio1 = { version = "1.0", package = "tokio", features = ["full"] }
+reqwest = { version = "0.11.2" }
+scraper = { version = "*" }
+select = { version = "*" }

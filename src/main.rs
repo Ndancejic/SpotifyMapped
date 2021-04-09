@@ -1,8 +1,8 @@
 mod wiki;
 mod spotify;
 
-use wiki::get_birthplace;
-use spotify::spotify_ref;
+use wiki::get_location;
+use spotify::SpotifyRef;
 
 // export CLIENT_ID="your client_id"
 // export CLIENT_SECRET="secret"
@@ -15,7 +15,7 @@ async fn main() {
     let scope = "user-read-currently-playing";
     let redirect_uri = "http://localhost:8888/callback";
 
-    let spotify = spotify_ref::new(scope, redirect_uri).await;
+    let spotify = SpotifyRef::new(scope, redirect_uri).await;
 
     spotify.get_current_song(&mut current_song)
         .await;
@@ -32,7 +32,8 @@ async fn main() {
         println!("Artists: ");
         for artist in current_artists
         {
-            println!("{}", artist.to_string())
+            println!("{}", artist.to_string());
+            get_location(&artist.to_string()).await;
         }
     }
 }
