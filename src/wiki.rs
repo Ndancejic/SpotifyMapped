@@ -27,7 +27,7 @@ pub async fn get_location(artist: &str) -> (i64, i64)
     let rt = match Runtime::new()
     {
         Ok(res) => res,
-        Err(_err) => panic!()
+        Err(_err) => return (0, 0)
     };
     let mut body = String::new();
     rt.block_on
@@ -37,13 +37,13 @@ pub async fn get_location(artist: &str) -> (i64, i64)
                 .await
             {
                 Ok(res) => res,
-                Err(_err) => panic!()
+                Err(_err) => return (0, 0)
             };
             body = match resp.text()
                 .await
             {
                 Ok(res) => res,
-                Err(_err) => panic!()
+                Err(_err) => return (0, 0)
             };
         }
     );
@@ -53,7 +53,7 @@ pub async fn get_location(artist: &str) -> (i64, i64)
     let reg = match Regex::new(r"[[:alpha:]]+, [[:alpha:]]+,? ?[[:alpha:]]*")
     {
         Ok(res) => res,
-        Err(_err) => panic!()
+        Err(_err) => return (0, 0)
     };
 
     for node in document.find(Class("infobox-label")) {
@@ -100,7 +100,7 @@ pub async fn get_location(artist: &str) -> (i64, i64)
             .execute()
             {
                 Ok(res) => res.results[0].geometry.location.to_owned(),
-                Err(_err) => panic!()
+                Err(_err) => return (0, 0)
             };
         let lat = location.lat.to_i64().unwrap();
         let lng = location.lng.to_i64().unwrap();
