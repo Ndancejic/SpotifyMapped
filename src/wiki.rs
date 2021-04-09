@@ -37,13 +37,13 @@ pub async fn get_location(artist: &str) -> (i64, i64)
                 .await
             {
                 Ok(res) => res,
-                Err(_err) => return (0, 0)
+                Err(_err) => panic!()
             };
             body = match resp.text()
                 .await
             {
                 Ok(res) => res,
-                Err(_err) => return (0, 0)
+                Err(_err) => panic!()
             };
         }
     );
