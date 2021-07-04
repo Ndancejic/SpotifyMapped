@@ -1,7 +1,7 @@
-mod wiki;
+mod common;
 mod spotify;
 
-use wiki::get_location;
+use common::get_location;
 use spotify::SpotifyRef;
 
 // export CLIENT_ID="your client_id"

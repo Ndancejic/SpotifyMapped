@@ -50,7 +50,7 @@ pub async fn get_location(artist: &str) -> (i64, i64)
 
     // create a document from the html
     let document = Document::from(&*body);
-    let reg = match Regex::new(r"[[:alpha:]]+, [[:alpha:]]+,? ?[[:alpha:]]*")
+    let reg = match Regex::new(r"(age.+)")
     {
         Ok(res) => res,
         Err(_err) => return (0, 0)
@@ -78,9 +78,11 @@ pub async fn get_location(artist: &str) -> (i64, i64)
             {
                 Some(res) => res.as_str().to_string().clone(),
                 None => continue
-            }
+            };
         }
     }
+
+    println!("Born: {}", origin);
 
     if origin != ""
     {
